@@ -44,7 +44,7 @@ export interface RankingHistoryEntry {
 const config = getConfig();
 
 // URL base da API baseada no ambiente
-const getApiBase = () => {
+export const getApiBase = () => {
   // Em desenvolvimento, usa proxy do Vite
   if (import.meta.env.DEV) {
     return '/api';

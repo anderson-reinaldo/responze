@@ -1,3 +1,4 @@
+import { getApiBase } from '@/lib/realApi';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -16,7 +17,7 @@ interface QuizConfig {
   minQuestions: number;
 }
 
-const API_BASE = '/api';
+const API_BASE = getApiBase();
 
 // Hook para buscar configuração atual
 export const useQuizConfig = () => {
