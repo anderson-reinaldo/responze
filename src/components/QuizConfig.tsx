@@ -153,7 +153,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 1,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 2,
@@ -166,7 +166,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 1,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 3,
@@ -179,7 +179,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 0,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 4,
@@ -192,7 +192,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 1,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 5,
@@ -205,7 +205,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 3,
     category: "Contabilidade - Custos",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 6,
@@ -218,7 +218,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 0,
     category: "Contabilidade - Custos",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 7,
@@ -231,7 +231,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 2,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 8,
@@ -244,7 +244,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 3,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 9,
@@ -257,7 +257,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 1,
     category: "Contabilidade - Custos",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 10,
@@ -270,7 +270,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 0,
     category: "Contabilidade - Demonstrações Contábeis",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 11,
@@ -283,7 +283,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 0,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 12,
@@ -296,7 +296,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 2,
     category: "Contabilidade - Estoques",
-    timeLimit: 60
+    timeLimit: 40
   },
   {
     id: 13,
@@ -309,7 +309,7 @@ const predefinedQuestions: Question[] = [
     ],
     correctAnswer: 1,
     category: "Contabilidade - Decisões Gerenciais",
-    timeLimit: 60
+    timeLimit: 40
   }
 ];
 

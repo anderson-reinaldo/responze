@@ -142,7 +142,7 @@ npm run dev
 - Animações especiais para o pódio
 
 ### **⏰ Gestão de Tempo**
-- Tempo padrão: 60 segundos por pergunta
+- Tempo padrão: 40 segundos por pergunta
 - Configuração individual por pergunta
 - Indicador visual quando restam ≤ 10 segundos
 - Timer com cores dinâmicas

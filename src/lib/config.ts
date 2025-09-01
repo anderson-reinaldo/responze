@@ -13,7 +13,7 @@ export const config = {
   // Configurações do quiz
   quiz: {
     // Tempo por pergunta (em segundos)
-    timePerQuestion: 60,
+    timePerQuestion: 40,
     // Número de perguntas por quiz
     questionsPerQuiz: 5,
     // Delay para mostrar resultado da pergunta (em ms)

@@ -8,7 +8,7 @@ interface Question {
   options: string[];
   correctAnswer: number;
   category: string;
-  timeLimit?: number; // Tempo em segundos (padrão: 60)
+  timeLimit?: number; // Tempo em segundos (padrão: 40)
 }
 
 interface QuizConfig {
