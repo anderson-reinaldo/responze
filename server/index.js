@@ -1,10 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs').promises;
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5163;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -14,7 +18,6 @@ app.use(express.json());
 const DATA_DIR = path.join(__dirname, 'data');
 const PLAYERS_FILE = path.join(DATA_DIR, 'players.json');
 const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
-const QUIZ_CONFIG_FILE = path.join(DATA_DIR, 'quiz-config.json');
 const RANKING_HISTORY_FILE = path.join(DATA_DIR, 'ranking-history.json');
 
 // Garante que o diretório de dados existe
@@ -137,7 +140,7 @@ app.delete('/api/players', async (req, res) => {
 // POST /api/sessions - Cria nova sessão de quiz
 app.post('/api/sessions', async (req, res) => {
   try {
-    // await delay(); // Comentado temporariamente
+    await delay();
     
     const { groupName } = req.body;
     
@@ -145,30 +148,18 @@ app.post('/api/sessions', async (req, res) => {
       return res.status(400).json({ error: 'Nome do grupo é obrigatório' });
     }
 
-    // Valida formato do nome do grupo ANTES de converter (apenas letras maiúsculas, números e espaços)
-    const trimmedGroupName = groupName.trim();
-    console.log('Validando grupo:', trimmedGroupName);
-    console.log('Regex test result:', /^[A-Z0-9\s]+$/.test(trimmedGroupName));
-    
-    if (!/^[A-Z0-9\s]+$/.test(trimmedGroupName)) {
-      console.log('Rejeitando grupo inválido:', trimmedGroupName);
-      return res.status(400).json({ error: 'Nome do grupo deve conter apenas letras maiúsculas, números e espaços' });
-    }
-    
-    const cleanGroupName = trimmedGroupName; // Já está no formato correto
-
     const sessions = await readJsonFile(SESSIONS_FILE, []);
     
     // Finaliza sessões ativas existentes do mesmo grupo
     const updatedSessions = sessions.map(session => 
-      session.groupName === cleanGroupName 
+      session.groupName === groupName.trim() 
         ? { ...session, isActive: false }
         : session
     );
 
     const newSession = {
       id: generateId(),
-      groupName: cleanGroupName,
+      groupName: groupName.trim(),
       currentScore: 0,
       isActive: true,
       startedAt: Date.now()
@@ -277,11 +268,10 @@ app.get('/api/sessions/active/:groupName', async (req, res) => {
     await delay(50);
     
     const { groupName } = req.params;
-    const cleanGroupName = decodeURIComponent(groupName).trim().toUpperCase();
     const sessions = await readJsonFile(SESSIONS_FILE, []);
     
     const activeSession = sessions.find(s => 
-      s.groupName === cleanGroupName && s.isActive
+      s.groupName === groupName && s.isActive
     );
 
     res.json(activeSession || null);
@@ -447,77 +437,6 @@ app.post('/api/restore', async (req, res) => {
     res.json({ message: 'Dados restaurados com sucesso' });
   } catch (error) {
     console.error('Erro ao restaurar dados:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
-// === ENDPOINTS DE CONFIGURAÇÃO DE PERGUNTAS ===
-
-// GET /api/quiz-config - Busca configuração atual das perguntas
-app.get('/api/quiz-config', async (req, res) => {
-  try {
-    const config = await readJsonFile(QUIZ_CONFIG_FILE, {
-      selectedQuestions: [],
-      lastUpdated: null,
-      minQuestions: 7
-    });
-    
-    res.json(config);
-  } catch (error) {
-    console.error('Erro ao buscar configuração:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
-// POST /api/quiz-config - Salva configuração das perguntas
-app.post('/api/quiz-config', async (req, res) => {
-  try {
-    const { selectedQuestions } = req.body;
-    
-    if (!Array.isArray(selectedQuestions)) {
-      return res.status(400).json({ error: 'selectedQuestions deve ser um array' });
-    }
-    
-    const config = {
-      selectedQuestions,
-      lastUpdated: new Date().toISOString(),
-      minQuestions: 7,
-      isValid: selectedQuestions.length >= 7
-    };
-    
-    await writeJsonFile(QUIZ_CONFIG_FILE, config);
-    
-    const message = selectedQuestions.length >= 7 
-      ? 'Configuração salva com sucesso'
-      : 'Seleção temporária salva';
-    
-    res.json({ 
-      message,
-      config 
-    });
-  } catch (error) {
-    console.error('Erro ao salvar configuração:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
-// DELETE /api/quiz-config - Remove configuração (volta ao padrão)
-app.delete('/api/quiz-config', async (req, res) => {
-  try {
-    const defaultConfig = {
-      selectedQuestions: [],
-      lastUpdated: null,
-      minQuestions: 7
-    };
-    
-    await writeJsonFile(QUIZ_CONFIG_FILE, defaultConfig);
-    
-    res.json({ 
-      message: 'Configuração resetada com sucesso',
-      config: defaultConfig 
-    });
-  } catch (error) {
-    console.error('Erro ao resetar configuração:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
