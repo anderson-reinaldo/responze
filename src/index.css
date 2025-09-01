@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Professional Design System - Modern App Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    /* Core brand colors - Professional palette */
+    --background: 240 10% 3.9%;
+    --foreground: 210 20% 95%;
+
+    --card: 240 8% 6%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 240 8% 6%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 222 84% 55%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 217 19% 20%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 217 19% 15%;
+    --muted-foreground: 215 20% 70%;
+
+    --accent: 142 76% 50%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 19% 15%;
+    --input: 217 19% 15%;
+    --ring: 222 84% 55%;
+
+    /* Professional quiz theme */
+    --quiz-primary: 222 84% 55%;
+    --quiz-secondary: 142 76% 50%;
+    --quiz-accent: 47 96% 55%;
+    --quiz-success: 142 76% 50%;
+    --quiz-warning: 47 96% 55%;
+    --quiz-error: 0 72% 55%;
+
+    /* Sophisticated gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(222 84% 55%) 0%, hsl(239 84% 67%) 50%, hsl(255 84% 70%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(142 76% 50%) 0%, hsl(158 76% 55%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(240 10% 3.9%) 0%, hsl(222 84% 5%) 25%, hsl(239 84% 8%) 75%, hsl(255 84% 12%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(240 8% 6%) 0%, hsl(217 19% 8%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(222 84% 55%) 0%, hsl(239 84% 67%) 100%);
+    --gradient-surface: linear-gradient(135deg, hsl(217 19% 20%) 0%, hsl(217 19% 15%) 100%);
+
+    /* Professional shadows */
+    --shadow-glow: 0 0 60px hsl(222 84% 55% / 0.15);
+    --shadow-card: 0 8px 32px hsl(240 8% 2% / 0.4);
+    --shadow-button: 0 4px 16px hsl(222 84% 55% / 0.3);
+    --shadow-elevated: 0 16px 64px hsl(240 8% 2% / 0.6);
+    --shadow-subtle: 0 2px 8px hsl(240 8% 2% / 0.2);
+
+    /* Smooth animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Typography scale */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-primary);
+    font-feature-settings: 'cv03', 'cv04', 'cv11';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Professional typography */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Glass morphism effects */
+  .glass {
+    backdrop-filter: blur(20px);
+    background: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .glass-strong {
+    backdrop-filter: blur(40px);
+    background: hsl(var(--card) / 0.9);
+    border: 1px solid hsl(var(--border) / 0.8);
+  }
+
+  /* Modern card styles */
+  .card-elevated {
+    box-shadow: var(--shadow-elevated);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .card-interactive {
+    transition: var(--transition-smooth);
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Professional button styles */
+  .btn-gradient {
+    background: var(--gradient-button);
+    box-shadow: var(--shadow-button);
+    transition: var(--transition-smooth);
+  }
+
+  .btn-gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px hsl(222 84% 55% / 0.4);
+  }
+
+  /* Animated underline */
+  .underline-animated {
+    position: relative;
+  }
+
+  .underline-animated::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: width 0.3s ease;
+  }
+
+  .underline-animated:hover::after {
+    width: 100%;
+  }
+}

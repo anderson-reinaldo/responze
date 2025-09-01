@@ -1,0 +1,98 @@
+{
+  "selectedQuestions": [
+    {
+      "id": 7,
+      "question": "Estoque inicial: 200 unid. a R$ 15,00.\nCompra: 100 unid. a R$ 18,00.\nVenda: 150 unid.\nQual o CMV pela média ponderada?",
+      "options": [
+        "R$ 2.200,00",
+        "R$ 2.300,00",
+        "R$ 2.400,00",
+        "R$ 2.500,00"
+      ],
+      "correctAnswer": 2,
+      "category": "Contabilidade - Estoques",
+      "timeLimit": 60
+    },
+    {
+      "id": 11,
+      "question": "Estoque inicial: 50 unidades a R$ 20\nCompra 1: 70 unidades a R$ 22\nCompra 2: 30 unidades a R$ 25\nVenda: 80 unidades\n\nQual o CMV pelo UEPS?",
+      "options": [
+        "R$ 1.850",
+        "R$ 1.780",
+        "R$ 1.800",
+        "R$ 1.900"
+      ],
+      "correctAnswer": 0,
+      "category": "Contabilidade - Estoques",
+      "timeLimit": 60
+    },
+    {
+      "id": 1,
+      "question": "O método PEPS é mais indicado quando:",
+      "options": [
+        "Os preços de compra estão em queda constante",
+        "Os produtos são perecíveis e têm prazo de validade",
+        "O objetivo é reduzir a carga tributária",
+        "Se deseja inflar artificialmente o lucro"
+      ],
+      "correctAnswer": 1,
+      "category": "Contabilidade - Estoques",
+      "timeLimit": 60
+    },
+    {
+      "id": 2,
+      "question": "Qual o objetivo principal do CPC 16?",
+      "options": [
+        "Definir regras fiscais para cálculo de tributos",
+        "Estabelecer critérios de mensuração e reconhecimento dos estoques",
+        "Determinar métodos de precificação",
+        "Regular apenas estoques de mercadorias para revenda"
+      ],
+      "correctAnswer": 1,
+      "category": "Contabilidade - Estoques",
+      "timeLimit": 60
+    },
+    {
+      "id": 13,
+      "question": "Qual das alternativas é verdadeira sobre a tomada de decisão gerencial?",
+      "options": [
+        "O custeio por absorção sempre fornece a melhor base para decisões de curto prazo",
+        "O custeio direto (variável) é mais útil para decisões de curto prazo",
+        "O VRL deve ser ignorado",
+        "Custos fixos devem sempre ser considerados integralmente"
+      ],
+      "correctAnswer": 1,
+      "category": "Contabilidade - Decisões Gerenciais",
+      "timeLimit": 60
+    },
+    {
+      "id": 9,
+      "question": "Conhecer os métodos de custeio ajuda principalmente a:",
+      "options": [
+        "Cumprir apenas a legislação fiscal",
+        "Avaliar corretamente o impacto dos custos sobre a DRE e o resultado",
+        "Substituir a análise de margem de contribuição",
+        "Ajustar automaticamente o preço de venda"
+      ],
+      "correctAnswer": 1,
+      "category": "Contabilidade - Custos",
+      "timeLimit": 60
+    },
+    {
+      "id": 4,
+      "question": "Qual a diferença entre inventário rotativo e inventário geral?",
+      "options": [
+        "O rotativo é feito apenas por auditores externos, e o geral é feito por funcionários internos",
+        "O rotativo é feito em pequenas partes ao longo do ano, enquanto o geral envolve todo o estoque de uma só vez",
+        "O geral é menos confiável que o rotativo",
+        "Ambos significam a mesma coisa"
+      ],
+      "correctAnswer": 1,
+      "category": "Contabilidade - Estoques",
+      "timeLimit": 60
+    }
+  ],
+  "lastUpdated": "2025-09-01T19:12:33.418Z",
+  "minQuestions": 7,
+  "isValid": true
+}

@@ -1,0 +1,132 @@
+[
+    {
+        "pergunta": "O método PEPS é mais indicado quando:",
+        "opcoes": [
+            "a) Os preços de compra estão em queda constante",
+            "b) Os produtos são perecíveis e têm prazo de validade",
+            "c) O objetivo é reduzir a carga tributária",
+            "d) Se deseja inflar artificialmente o lucro"
+        ],
+        "resposta": "b) Os produtos são perecíveis e têm prazo de validade"
+    },
+    {
+        "pergunta": "Qual o objetivo principal do CPC 16?",
+        "opcoes": [
+            "a) Definir regras fiscais para cálculo de tributos",
+            "b) Estabelecer critérios de mensuração e reconhecimento dos estoques",
+            "c) Determinar métodos de precificação",
+            "d) Regular apenas estoques de mercadorias para revenda"
+        ],
+        "resposta": "b) Estabelecer critérios de mensuração e reconhecimento dos estoques"
+    },
+    {
+        "pergunta": "Estoque inicial: 200 unidades a R$ 5,00 cada.\nCompra: 100 unidades a R$ 6,00.\nVenda: 150 unidades.\nQual o custo da venda pelo método PEPS?",
+        "opcoes": [
+            "a) R$ 750,00",
+            "b) R$ 780,00",
+            "c) R$ 810,00",
+            "d) R$ 900,00"
+        ],
+        "resposta": "a) R$ 750,00"
+    },
+    {
+        "pergunta": "Qual a diferença entre inventário rotativo e inventário geral?",
+        "opcoes": [
+            "a) O rotativo é feito apenas por auditores externos, e o geral é feito por funcionários internos",
+            "b) O rotativo é feito em pequenas partes ao longo do ano, enquanto o geral envolve todo o estoque de uma só vez",
+            "c) O geral é menos confiável que o rotativo",
+            "d) Ambos significam a mesma coisa"
+        ],
+        "resposta": "b) O rotativo é feito em pequenas partes ao longo do ano, enquanto o geral envolve todo o estoque de uma só vez"
+    },
+    {
+        "pergunta": "Custos fixos aumentaram, mas o custo direto permanece:",
+        "opcoes": [
+            "a) Maior",
+            "b) Menor",
+            "c) Depende do preço de venda",
+            "d) Inalterado"
+        ],
+        "resposta": "d) Inalterado"
+    },
+    {
+        "pergunta": "Em uma análise de mix de produtos, a margem de contribuição ajuda a:",
+        "opcoes": [
+            "a) Determinar quais produtos contribuem mais para cobrir custos fixos e gerar lucro",
+            "b) Ajustar o valor de estoque pelo VRL",
+            "c) Substituir o cálculo do custo variável",
+            "d) Definir apenas os custos fixos"
+        ],
+        "resposta": "a) Determinar quais produtos contribuem mais para cobrir custos fixos e gerar lucro"
+    },
+    {
+        "pergunta": "Estoque inicial: 200 unid. a R$ 15,00.\nCompra: 100 unid. a R$ 18,00.\nVenda: 150 unid.\nQual o CMV pela média ponderada?",
+        "opcoes": [
+            "a) R$ 2.200,00",
+            "b) R$ 2.300,00",
+            "c) R$ 2.400,00",
+            "d) R$ 2.500,00"
+        ],
+        "resposta": "c) R$ 2.400,00"
+    },
+    {
+        "pergunta": "Qual é a principal desvantagem do método UEPS?",
+        "opcoes": [
+            "a) Mostra um custo de mercadoria vendida mais alto e lucro menor",
+            "b) Não é aceito pela legislação brasileira",
+            "c) Pode deixar produtos antigos parados no estoque",
+            "d) Todas as alternativas anteriores"
+        ],
+        "resposta": "d) Todas as alternativas anteriores"
+    },
+    {
+        "pergunta": "Conhecer os métodos de custeio ajuda principalmente a:",
+        "opcoes": [
+            "a) Cumprir apenas a legislação fiscal",
+            "b) Avaliar corretamente o impacto dos custos sobre a DRE e o resultado",
+            "c) Substituir a análise de margem de contribuição",
+            "d) Ajustar automaticamente o preço de venda"
+        ],
+        "resposta": "b) Avaliar corretamente o impacto dos custos sobre a DRE e o resultado"
+    },
+    {
+        "pergunta": "Qual demonstração contábil é diretamente influenciada pela escolha do custeio por absorção?",
+        "opcoes": [
+            "a) DRE",
+            "b) Balanço Patrimonial",
+            "c) Fluxo de Caixa",
+            "d) Demonstração do Valor Adicionado"
+        ],
+        "resposta": "a) DRE"
+    },
+    {
+        "pergunta": "Estoque inicial: 50 unidades a R$ 20\nCompra 1: 70 unidades a R$ 22\nCompra 2: 30 unidades a R$ 25\nVenda: 80 unidades\n\nQual o CMV pelo UEPS?",
+        "opcoes": [
+            "a) R$ 1.850",
+            "b) R$ 1.780",
+            "c) R$ 1.800",
+            "d) R$ 1.900"
+        ],
+        "resposta": "a) R$ 1.850"
+    },
+    {
+        "pergunta": "O VRL (Valor Realizável Liquido) não inclui:",
+        "opcoes": [
+            "a) Custos de venda estimado",
+            "b) Custos de conclusão do produto",
+            "c) Preço de venda",
+            "d) Impostos incidentes sobre a venda"
+        ],
+        "resposta": "c) Preço de venda"
+    },
+    {
+        "pergunta": "Qual das alternativas é verdadeira sobre a tomada de decisão gerencial?",
+        "opcoes": [
+            "a) O custeio por absorção sempre fornece a melhor base para decisões de curto prazo",
+            "b) O custeio direto (variável) é mais útil para decisões de curto prazo",
+            "c) O VRL deve ser ignorado",
+            "d) Custos fixos devem sempre ser considerados integralmente"
+        ],
+        "resposta": "b) O custeio direto (variável) é mais útil para decisões de curto prazo"
+    }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "mf1i30uzwcbyoz5d9w",
+    "startDate": 1756750886668,
+    "endDate": 1756754185499,
+    "players": [
+      {
+        "group": "GRUPO 1",
+        "score": 2,
+        "position": 1,
+        "timestamp": 1756754167597
+      }
+    ],
+    "sessions": [
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 6,
+        "startedAt": 1756750886668
+      },
+      {
+        "groupName": "GRUPO 2",
+        "currentScore": 6,
+        "startedAt": 1756750935154
+      },
+      {
+        "groupName": "GRUPO 3",
+        "currentScore": 6,
+        "startedAt": 1756750973014
+      },
+      {
+        "groupName": "GRUPO 4",
+        "currentScore": 5,
+        "startedAt": 1756751015598
+      },
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 0,
+        "startedAt": 1756751538208
+      },
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 0,
+        "startedAt": 1756751547598
+      },
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 0,
+        "startedAt": 1756751755218
+      },
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 0,
+        "startedAt": 1756751957641
+      },
+      {
+        "groupName": "GRUPO 5",
+        "currentScore": 0,
+        "startedAt": 1756753087296
+      },
+      {
+        "groupName": "GRUPO 5",
+        "currentScore": 0,
+        "startedAt": 1756753096827
+      },
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 0,
+        "startedAt": 1756753264672
+      },
+      {
+        "groupName": "GRUPO 1",
+        "currentScore": 2,
+        "startedAt": 1756754144377
+      }
+    ],
+    "totalPlayers": 1,
+    "totalSessions": 12,
+    "archivedAt": 1756754185499
+  }
+]
