@@ -225,6 +225,18 @@ export const AdminPanel = ({ isOpen, onClose, onOpenQuizConfig, onOpenRoomManage
             )}
 
             <QuizButton
+              onClick={() => {
+                window.location.href = '/';
+              }}
+              variant="secondary"
+              size="lg"
+              className="w-full"
+            >
+              <Home className="w-4 h-4" />
+              Voltar ao Início
+            </QuizButton>
+
+            <QuizButton
               onClick={() => refetchRanking()}
               variant="secondary"
               size="lg"
