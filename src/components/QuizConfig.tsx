@@ -313,7 +313,7 @@ const predefinedQuestions: Question[] = [
   }
 ];
 
-export const QuizConfig = ({ onStartQuiz, onBack }: QuizConfigProps) => {
+export const QuizConfig = () => {
   // Estados locais
   const [customQuestions, setCustomQuestions] = useState<Question[]>([]);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
@@ -389,14 +389,6 @@ export const QuizConfig = ({ onStartQuiz, onBack }: QuizConfigProps) => {
     } else {
       updateSelectedQuestions([...selectedQuestions, question]);
     }
-  };
-
-  const handleStartQuiz = () => {
-    if (selectedQuestions.length < 7) {
-      toast.error("Selecione pelo menos 7 perguntas para começar o quiz!");
-      return;
-    }
-    onStartQuiz(selectedQuestions);
   };
 
   const selectRandomQuestions = (count: number) => {
@@ -496,9 +488,6 @@ export const QuizConfig = ({ onStartQuiz, onBack }: QuizConfigProps) => {
                 <p className="text-white/70 text-sm sm:text-base">Selecione ou crie suas perguntas</p>
               </div>
             </div>
-            <QuizButton onClick={onBack} variant="secondary" className="w-full sm:w-auto">
-              ← Voltar
-            </QuizButton>
           </div>
 
           {/* Status da Configuração */}

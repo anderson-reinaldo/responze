@@ -11,7 +11,7 @@
       ],
       "correctAnswer": 3,
       "category": "Contabilidade - Estoques",
-      "timeLimit": 40
+      "timeLimit": 60
     },
     {
       "id": 12,
@@ -24,7 +24,7 @@
       ],
       "correctAnswer": 2,
       "category": "Contabilidade - Estoques",
-      "timeLimit": 40
+      "timeLimit": 60
     },
     {
       "id": 7,
@@ -37,7 +37,7 @@
       ],
       "correctAnswer": 2,
       "category": "Contabilidade - Estoques",
-      "timeLimit": 40
+      "timeLimit": 60
     },
     {
       "id": 3,
@@ -50,7 +50,7 @@
       ],
       "correctAnswer": 0,
       "category": "Contabilidade - Estoques",
-      "timeLimit": 40
+      "timeLimit": 60
     },
     {
       "id": 5,
@@ -63,7 +63,7 @@
       ],
       "correctAnswer": 3,
       "category": "Contabilidade - Custos",
-      "timeLimit": 40
+      "timeLimit": 60
     },
     {
       "id": 9,
@@ -76,7 +76,7 @@
       ],
       "correctAnswer": 1,
       "category": "Contabilidade - Custos",
-      "timeLimit": 40
+      "timeLimit": 60
     },
     {
       "id": 2,
@@ -89,7 +89,7 @@
       ],
       "correctAnswer": 1,
       "category": "Contabilidade - Estoques",
-      "timeLimit": 40
+      "timeLimit": 60
     }
   ],
   "lastUpdated": "2025-09-02T19:32:23.607Z",

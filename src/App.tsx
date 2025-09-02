@@ -8,6 +8,7 @@ import RoomPage from "./pages/RoomPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateRoomPage from "./pages/CreateRoomPage";
 import NotFound from "./pages/NotFound";
+import { QuizConfig } from "./components/QuizConfig";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/room/:roomId" element={<RoomPage />} />
           <Route path="/admin/create-room" element={<CreateRoomPage />} />
+          <Route path="/admin/panel" element={<QuizConfig />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
