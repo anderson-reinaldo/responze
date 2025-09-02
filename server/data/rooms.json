@@ -1,1 +1,137 @@
-[]
+[
+  {
+    "id": "r0wx3ekqnmf34h6ef",
+    "name": "Sala 19:31",
+    "password": "4483",
+    "status": "finished",
+    "participants": [
+      {
+        "id": "dg517whrymf34hr2d",
+        "groupName": "teste",
+        "score": 0,
+        "answers": [],
+        "joinedAt": 1756852290373,
+        "isActive": true
+      }
+    ],
+    "currentQuestionIndex": -1,
+    "questions": [
+      {
+        "id": 8,
+        "question": "Qual é a principal desvantagem do método UEPS?",
+        "options": [
+          "Mostra um custo de mercadoria vendida mais alto e lucro menor",
+          "Não é aceito pela legislação brasileira",
+          "Pode deixar produtos antigos parados no estoque",
+          "Todas as alternativas anteriores"
+        ],
+        "correctAnswer": 3,
+        "category": "Contabilidade - Estoques",
+        "timeLimit": 40
+      },
+      {
+        "id": 12,
+        "question": "O VRL (Valor Realizável Liquido) não inclui:",
+        "options": [
+          "Custos de venda estimado",
+          "Custos de conclusão do produto",
+          "Preço de venda",
+          "Impostos incidentes sobre a venda"
+        ],
+        "correctAnswer": 2,
+        "category": "Contabilidade - Estoques",
+        "timeLimit": 40
+      },
+      {
+        "id": 7,
+        "question": "Estoque inicial: 200 unid. a R$ 15,00.\nCompra: 100 unid. a R$ 18,00.\nVenda: 150 unid.\nQual o CMV pela média ponderada?",
+        "options": [
+          "R$ 2.200,00",
+          "R$ 2.300,00",
+          "R$ 2.400,00",
+          "R$ 2.500,00"
+        ],
+        "correctAnswer": 2,
+        "category": "Contabilidade - Estoques",
+        "timeLimit": 40
+      },
+      {
+        "id": 3,
+        "question": "Estoque inicial: 200 unidades a R$ 5,00 cada.\nCompra: 100 unidades a R$ 6,00.\nVenda: 150 unidades.\nQual o custo da venda pelo método PEPS?",
+        "options": [
+          "R$ 750,00",
+          "R$ 780,00",
+          "R$ 810,00",
+          "R$ 900,00"
+        ],
+        "correctAnswer": 0,
+        "category": "Contabilidade - Estoques",
+        "timeLimit": 40
+      },
+      {
+        "id": 5,
+        "question": "Custos fixos aumentaram, mas o custo direto permanece:",
+        "options": [
+          "Maior",
+          "Menor",
+          "Depende do preço de venda",
+          "Inalterado"
+        ],
+        "correctAnswer": 3,
+        "category": "Contabilidade - Custos",
+        "timeLimit": 40
+      },
+      {
+        "id": 9,
+        "question": "Conhecer os métodos de custeio ajuda principalmente a:",
+        "options": [
+          "Cumprir apenas a legislação fiscal",
+          "Avaliar corretamente o impacto dos custos sobre a DRE e o resultado",
+          "Substituir a análise de margem de contribuição",
+          "Ajustar automaticamente o preço de venda"
+        ],
+        "correctAnswer": 1,
+        "category": "Contabilidade - Custos",
+        "timeLimit": 40
+      },
+      {
+        "id": 2,
+        "question": "Qual o objetivo principal do CPC 16?",
+        "options": [
+          "Definir regras fiscais para cálculo de tributos",
+          "Estabelecer critérios de mensuração e reconhecimento dos estoques",
+          "Determinar métodos de precificação",
+          "Regular apenas estoques de mercadorias para revenda"
+        ],
+        "correctAnswer": 1,
+        "category": "Contabilidade - Estoques",
+        "timeLimit": 40
+      }
+    ],
+    "createdAt": 1756852263591,
+    "startedAt": 1756852319212,
+    "finishedAt": 1756852351552,
+    "currentQuestion": 0,
+    "gameResults": [
+      {
+        "groupName": "teste",
+        "score": 0,
+        "totalAnswers": 0,
+        "correctAnswers": 0,
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "s3pnx2d4nmf34i8hj",
+    "name": "Sala TV Mode Completo",
+    "password": "1234",
+    "status": "waiting",
+    "participants": [],
+    "currentQuestionIndex": -1,
+    "questions": [],
+    "createdAt": 1756852312951,
+    "startedAt": null,
+    "finishedAt": null
+  }
+]

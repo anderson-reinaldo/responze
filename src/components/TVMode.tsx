@@ -105,8 +105,8 @@ export default function TVMode({ room: initialRoom, onBack }: TVModeProps) {
       const { data } = await api.get(`/rooms/${room.id}`);
       setRoom(data);
       // Calcular estatísticas de respostas para a pergunta atual
-      if (data.status === 'playing' && data.questions[data.currentQuestion]) {
-        const currentQuestionIndex = data.currentQuestion;
+      if (data.status === 'playing' && data.questions[data.currentQuestionIndex || data.currentQuestion]) {
+        const currentQuestionIndex = data.currentQuestionIndex || data.currentQuestion;
         const stats: Record<string, number> = {};
         data.participants.forEach((participant: Participant) => {
           const answer = participant.answers.find(a => a.questionIndex === currentQuestionIndex);
@@ -117,12 +117,35 @@ export default function TVMode({ room: initialRoom, onBack }: TVModeProps) {
         setParticipantStats(stats);
       }
     } catch (error: any) {
-      // toast.error(error?.response?.data?.error || error?.message || 'Erro ao carregar dados da sala');
+      console.error('Erro ao carregar dados da sala:', error);
     }
   };
 
-  const currentQuestion = room.questions[room.currentQuestion];
-  const progress = room.questions.length > 0 ? ((room.currentQuestion + 1) / room.questions.length) * 100 : 0;
+  const nextQuestion = async () => {
+    setIsAdvancing(true);
+    try {
+      const { data } = await api.post(`/rooms/${room.id}/next`);
+      if (data.room?.status === 'finished') {
+        toast.success('Quiz finalizado!');
+        confetti({
+          particleCount: 200,
+          spread: 100,
+          origin: { y: 0.6 }
+        });
+      } else {
+        toast.success('Próxima pergunta!');
+      }
+      // Dados serão atualizados pelo polling
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || error?.message || 'Erro ao avançar pergunta');
+    } finally {
+      setIsAdvancing(false);
+    }
+  };
+
+  const currentQuestionIndex = room.currentQuestionIndex >= 0 ? room.currentQuestionIndex : room.currentQuestion;
+  const currentQuestion = room.questions[currentQuestionIndex];
+  const progress = room.questions.length > 0 ? ((currentQuestionIndex + 1) / room.questions.length) * 100 : 0;
   const totalAnswered = Object.values(participantStats).reduce((sum, count) => sum + count, 0);
   const totalParticipants = room.participants.length;
 
@@ -245,7 +268,7 @@ export default function TVMode({ room: initialRoom, onBack }: TVModeProps) {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white">{room.name}</h1>
-              <p className="text-blue-200">Pergunta {room.currentQuestion + 1} de {room.questions.length}</p>
+              <p className="text-blue-200">Pergunta {currentQuestionIndex + 1} de {room.questions.length}</p>
             </div>
             <div className="flex items-center gap-4">
               <Badge variant="destructive" className="px-4 py-2 text-lg">
@@ -268,56 +291,123 @@ export default function TVMode({ room: initialRoom, onBack }: TVModeProps) {
             <Progress value={progress} className="h-3 bg-white/20" />
           </div>
 
-          {/* Pergunta */}
-          <Card className="backdrop-blur-sm bg-white/10 border-white/20">
-            <CardContent className="py-12">
-              <h2 className="text-4xl font-bold text-white text-center mb-8">
-                {currentQuestion.question}
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {currentQuestion.options.map((option, index) => {
-                  const stats = getOptionStats(option);
-                  const isCorrect = option === currentQuestion.correctAnswer;
+          {/* Timer */}
+          {timerActive && (
+            <Card className="backdrop-blur-sm bg-white/10 border-white/20">
+              <CardContent className="py-6">
+                <div className="flex items-center justify-center gap-4">
+                  <Clock className="w-8 h-8 text-yellow-400" />
+                  <div className="text-center">
+                    <div className={`text-4xl font-bold ${timeLeft <= 10 ? 'text-red-400' : timeLeft <= 30 ? 'text-yellow-400' : 'text-green-400'}`}>
+                      {timeLeft}s
+                    </div>
+                    <div className="text-blue-200">Tempo restante</div>
+                  </div>
+                  <div className="flex-1 max-w-md">
+                    <Progress 
+                      value={(timeLeft / (currentQuestion?.timeLimit || 60)) * 100} 
+                      className={`h-4 ${timeLeft <= 10 ? 'bg-red-500/20' : timeLeft <= 30 ? 'bg-yellow-500/20' : 'bg-green-500/20'}`}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Pergunta */}
+            <div className="lg:col-span-2">
+              <Card className="backdrop-blur-sm bg-white/10 border-white/20">
+                <CardContent className="py-12">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-white text-center mb-8">
+                    {currentQuestion.question}
+                  </h2>
                   
-                  return (
-                    <div
-                      key={index}
-                      className={`relative p-6 rounded-lg border-2 ${
-                        showCorrectAnswer && isCorrect
-                          ? 'bg-green-500/30 border-green-400'
-                          : 'bg-white/5 border-white/20'
-                      } transition-colors duration-500`}
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-2xl font-bold text-white">
-                          {String.fromCharCode(65 + index)}) {option}
-                        </span>
-                        {showCorrectAnswer && isCorrect && (
-                          <CheckCircle className="w-8 h-8 text-green-400" />
-                        )}
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {currentQuestion.options.map((option, index) => {
+                      const stats = getOptionStats(option);
+                      const isCorrect = option === currentQuestion.correctAnswer || index === currentQuestion.correctAnswer;
                       
-                      {totalAnswered > 0 && (
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm text-blue-200">
-                            <span>{stats.count} respostas</span>
-                            <span>{stats.percentage.toFixed(1)}%</span>
+                      return (
+                        <div
+                          key={index}
+                          className={`relative p-4 rounded-lg border-2 ${
+                            showCorrectAnswer && isCorrect
+                              ? 'bg-green-500/30 border-green-400'
+                              : 'bg-white/5 border-white/20'
+                          } transition-colors duration-500`}
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-lg lg:text-xl font-bold text-white">
+                              {String.fromCharCode(65 + index)}) {option}
+                            </span>
+                            {showCorrectAnswer && isCorrect && (
+                              <CheckCircle className="w-6 h-6 text-green-400" />
+                            )}
                           </div>
-                          <div className="w-full bg-white/20 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${stats.percentage}%` }}
-                            />
+                          
+                          {totalAnswered > 0 && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm text-blue-200">
+                                <span>{stats.count} respostas</span>
+                                <span>{stats.percentage.toFixed(1)}%</span>
+                              </div>
+                              <div className="w-full bg-white/20 rounded-full h-2">
+                                <div
+                                  className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                                  style={{ width: `${stats.percentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Ranking */}
+            <div>
+              <Card className="backdrop-blur-sm bg-white/10 border-white/20">
+                <CardHeader>
+                  <CardTitle className="text-white text-xl flex items-center gap-2">
+                    <Trophy className="w-6 h-6 text-yellow-400" />
+                    Ranking Atual
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {getRanking().slice(0, 8).map((participant, index) => (
+                      <div
+                        key={participant.id}
+                        className={`flex items-center justify-between p-3 rounded-lg ${
+                          index === 0 ? 'bg-yellow-500/20 border border-yellow-400/50' :
+                          index === 1 ? 'bg-gray-400/20 border border-gray-400/50' :
+                          index === 2 ? 'bg-orange-600/20 border border-orange-600/50' :
+                          'bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}º`}
+                          </span>
+                          <div>
+                            <div className="text-white font-medium text-sm">{participant.groupName}</div>
+                            <div className="text-blue-200 text-xs">
+                              {participant.answers.filter(a => a.isCorrect).length}/{room.questions.length}
+                            </div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                        <span className="text-yellow-400 font-bold">{participant.score}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
           {/* Estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -348,18 +438,31 @@ export default function TVMode({ room: initialRoom, onBack }: TVModeProps) {
 
           {/* Controles */}
           <div className="text-center space-y-4">
-            {!showCorrectAnswer && totalAnswered === totalParticipants && (
+            <div className="flex justify-center gap-4">
+              {!showCorrectAnswer && (
+                <Button
+                  onClick={() => setShowCorrectAnswer(true)}
+                  size="lg"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Mostrar Resposta Correta
+                </Button>
+              )}
+              
               <Button
-                onClick={() => setShowCorrectAnswer(true)}
+                onClick={nextQuestion}
+                disabled={isAdvancing}
                 size="lg"
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50"
               >
-                Mostrar Resposta Correta
+                <SkipForward className="w-5 h-5 mr-2" />
+                {isAdvancing ? 'Avançando...' : 'Próxima Pergunta'}
               </Button>
-            )}
+            </div>
             
-            <div className="text-blue-200">
-              Aguardando comando do administrador para próxima pergunta...
+            <div className="text-blue-200 text-sm">
+              {totalAnswered} de {totalParticipants} participantes responderam
             </div>
           </div>
         </div>
