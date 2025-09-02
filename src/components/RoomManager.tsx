@@ -106,7 +106,12 @@ export default function AdminDashboard({ questions, onStartTVMode }:RoomManagerP
     try {
       await api.post(`/rooms/${roomId}/start`, { questions });
       toast.success('Quiz iniciado!');
-      loadRooms();
+      
+      // Buscar dados atualizados da sala e iniciar TV Mode automaticamente
+      const { data: roomData } = await api.get(`/rooms/${roomId}`);
+      if (roomData) {
+        onStartTVMode(roomData);
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.error || error?.message || 'Erro ao iniciar quiz');
     }
