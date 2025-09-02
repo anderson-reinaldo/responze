@@ -1,5 +1,6 @@
 // API real que se comunica com o backend
 import { getConfig } from './config';
+import api from '@/services/axios';
 
 export interface Player {
   id: string;
@@ -45,15 +46,9 @@ const config = getConfig();
 
 // URL base da API baseada no ambiente
 export const getApiBase = () => {
-  // Em desenvolvimento, usa proxy do Vite
-  if (import.meta.env.DEV) {
-    return '/api';
-  }
-  
+
   // Em produção, usa variável de ambiente ou fallback
-  return import.meta.env.VITE_API_URL 
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : '/api';
+  return import.meta.env.VITE_API_URL;
 };
 
 const API_BASE = getApiBase();
@@ -61,22 +56,33 @@ const API_BASE = getApiBase();
 class RealQuizAPI {
   // Função auxiliar para fazer requisições
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_BASE}${endpoint}`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Erro de rede' }));
-      throw new Error(error.error || `Erro ${response.status}`);
+    const url = `${endpoint}`;
+    try {
+      let response;
+      // Converte headers para objeto simples se for Headers ou array
+      let headers: Record<string, string> | undefined = undefined;
+      if (options.headers) {
+        if (options.headers instanceof Headers) {
+          headers = Object.fromEntries(options.headers.entries());
+        } else if (Array.isArray(options.headers)) {
+          headers = Object.fromEntries(options.headers);
+        } else {
+          headers = options.headers as Record<string, string>;
+        }
+      }
+      if (options.method === 'POST') {
+        response = await api.post(url, options.body ? JSON.parse(options.body as string) : undefined, { headers });
+      } else if (options.method === 'PUT') {
+        response = await api.put(url, options.body ? JSON.parse(options.body as string) : undefined, { headers });
+      } else if (options.method === 'DELETE') {
+        response = await api.delete(url, { headers });
+      } else {
+        response = await api.get(url, { headers });
+      }
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error?.response?.data?.error || error?.message || 'Erro de rede');
     }
-
-    return response.json();
   }
 
   // Busca ranking de jogadores
@@ -128,11 +134,12 @@ class RealQuizAPI {
 
   // Exporta backup dos dados
   async exportBackup(): Promise<Blob> {
-    const response = await fetch(`${API_BASE}/backup`);
-    if (!response.ok) {
-      throw new Error('Erro ao exportar backup');
+    try {
+      const response = await api.get('/backup', { responseType: 'blob' });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error?.response?.data?.error || error?.message || 'Erro ao exportar backup');
     }
-    return response.blob();
   }
 
   // Restaura dados de backup

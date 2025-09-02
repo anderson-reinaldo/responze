@@ -11,6 +11,7 @@ interface PodiumProps {
   players: Player[];
   onStartQuiz: (groupName: string) => void;
   onConfigQuiz: () => void;
+  onManageRooms?: () => void;
   isLoading?: boolean;
   isAdminAuthenticated?: boolean;
 }
@@ -18,7 +19,8 @@ interface PodiumProps {
 export const Podium = ({ 
   players, 
   onStartQuiz, 
-  onConfigQuiz, 
+  onConfigQuiz,
+  onManageRooms,
   isLoading = false, 
   isAdminAuthenticated = false 
 }: PodiumProps) => {
@@ -164,6 +166,25 @@ export const Podium = ({
                   {isLoading ? "Iniciando..." : "Jogar Agora"}
                 </QuizButton>
               </div>
+
+              {/* Botão para acessar salas */}
+              <div className="text-center">
+                <p className="text-sm text-white/60 mb-3">Ou participe de uma sala:</p>
+                <QuizButton
+                  onClick={() => {
+                    const roomId = prompt("Digite o ID da sala ou cole o link:");
+                    if (roomId) {
+                      const id = roomId.includes('/room/') ? roomId.split('/room/')[1] : roomId;
+                      window.location.href = `/room/${id}`;
+                    }
+                  }}
+                  variant="secondary"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Entrar em Sala
+                </QuizButton>
+              </div>
             </div>
           </div>
         </div>
@@ -297,7 +318,11 @@ export const Podium = ({
         {showAdmin && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
             <div className="bg-white/95 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl max-w-xs sm:max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-auto">
-              <AdminPanel isOpen={true} onClose={() => setShowAdmin(false)} />
+              <AdminPanel 
+                isOpen={true} 
+                onClose={() => setShowAdmin(false)}
+                onOpenRoomManager={onManageRooms}
+              />
             </div>
           </div>
         )}

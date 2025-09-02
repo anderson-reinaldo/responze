@@ -10,12 +10,18 @@ const PORT = process.env.PORT || 5163;
 app.use(cors());
 app.use(express.json());
 
-// Caminhos dos arquivos de dados
+// Função para gerar ID único
+function generateId() {
+  return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
+
+// Configuração dos arquivos JSON
 const DATA_DIR = path.join(__dirname, 'data');
 const PLAYERS_FILE = path.join(DATA_DIR, 'players.json');
 const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
 const QUIZ_CONFIG_FILE = path.join(DATA_DIR, 'quiz-config.json');
 const RANKING_HISTORY_FILE = path.join(DATA_DIR, 'ranking-history.json');
+const ROOMS_FILE = path.join(DATA_DIR, 'rooms.json');
 
 // Garante que o diretório de dados existe
 async function ensureDataDir() {
@@ -44,11 +50,6 @@ async function readJsonFile(filePath, defaultValue = []) {
 async function writeJsonFile(filePath, data) {
   await ensureDataDir();
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
-}
-
-// Gera ID único
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
 // Delay simulado para simular latência de rede
@@ -518,6 +519,554 @@ app.delete('/api/quiz-config', async (req, res) => {
     });
   } catch (error) {
     console.error('Erro ao resetar configuração:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// === ENDPOINTS DE SISTEMA DE SALAS ===
+
+
+// GET /api/rooms/:roomId - Busca informações da sala
+app.get('/api/rooms/:roomId', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const room = rooms.find(room => room.id === roomId);
+    
+    if (!room) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    // Remove senha da resposta
+    const { password: _, ...roomResponse } = room;
+    res.json(roomResponse);
+  } catch (error) {
+    console.error('Erro ao buscar sala:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/rooms/:roomId/start - Inicia o jogo na sala (apenas host)
+app.post('/api/rooms/:roomId/start', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { questions } = req.body;
+    
+    if (!questions || !Array.isArray(questions)) {
+      return res.status(400).json({ error: 'Perguntas são obrigatórios' });
+    }
+
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const roomIndex = rooms.findIndex(room => room.id === roomId);
+    
+    if (roomIndex === -1) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const room = rooms[roomIndex];
+
+    if (room.status !== 'waiting') {
+      return res.status(400).json({ error: 'O jogo já foi iniciado ou finalizado' });
+    }
+
+    if (room.participants.length === 0) {
+      return res.status(400).json({ error: 'Não há participantes na sala' });
+    }
+
+    room.status = 'playing';
+    room.questions = questions;
+    room.currentQuestionIndex = 0;
+    room.currentQuestion = 0; // Sempre índice
+    room.startedAt = Date.now();
+
+    rooms[roomIndex] = room;
+    await writeJsonFile(ROOMS_FILE, rooms);
+
+    res.json({ 
+      message: 'Jogo iniciado com sucesso',
+      room: {
+        id: room.id,
+        status: room.status,
+        currentQuestion: room.currentQuestion,
+        currentQuestionIndex: room.currentQuestionIndex,
+        totalQuestions: room.questions.length,
+        participantCount: room.participants.length
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao iniciar jogo:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/rooms/:roomId/answer - Participante responde pergunta
+app.post('/api/rooms/:roomId/answer', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { participantId, questionIndex, selectedAnswer, answer, timeSpent } = req.body;
+    
+    console.log('Payload recebido:', { participantId, questionIndex, selectedAnswer, answer, timeSpent });
+    
+    // Aceita tanto selectedAnswer (número) quanto answer (string)
+    const userAnswer = selectedAnswer !== undefined ? selectedAnswer : answer;
+    
+    console.log('userAnswer:', userAnswer, 'tipo:', typeof userAnswer);
+    console.log('questionIndex:', questionIndex, 'tipo:', typeof questionIndex);
+    
+    if (typeof questionIndex !== 'number') {
+      console.log('Erro: questionIndex não é número');
+      return res.status(400).json({ error: 'questionIndex deve ser um número' });
+    }
+    
+    if (userAnswer === undefined || userAnswer === null) {
+      console.log('Erro: resposta é obrigatória');
+      return res.status(400).json({ error: 'Resposta é obrigatória' });
+    }
+
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const roomIndex = rooms.findIndex(room => room.id === roomId);
+    
+    if (roomIndex === -1) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const room = rooms[roomIndex];
+
+    if (room.status !== 'playing') {
+      return res.status(400).json({ error: 'O jogo não está em andamento' });
+    }
+
+    const participantIndex = room.participants.findIndex(p => p.id === participantId);
+    if (participantIndex === -1) {
+      return res.status(404).json({ error: 'Participante não encontrado' });
+    }
+
+    const participant = room.participants[participantIndex];
+    const question = room.questions[questionIndex];
+
+    if (!question) {
+      return res.status(400).json({ error: 'Pergunta não encontrada' });
+    }
+
+    // Verifica se já respondeu esta pergunta
+    const existingAnswer = participant.answers.find(a => a.questionIndex === questionIndex);
+    if (existingAnswer) {
+      return res.status(400).json({ error: 'Pergunta já respondida' });
+    }
+
+    // Determina se a resposta está correta
+    let isCorrect = false;
+    
+    if (typeof question.correctAnswer === 'number') {
+      // Se correctAnswer é número (índice), compara com selectedAnswer ou converte answer para índice
+      if (typeof userAnswer === 'number') {
+        isCorrect = userAnswer === question.correctAnswer;
+      } else if (typeof userAnswer === 'string') {
+        // Converte string para índice
+        const answerIndex = question.options.indexOf(userAnswer);
+        isCorrect = answerIndex === question.correctAnswer;
+      }
+    } else if (typeof question.correctAnswer === 'string') {
+      // Se correctAnswer é string, compara diretamente
+      isCorrect = userAnswer === question.correctAnswer;
+    }
+
+    const points = isCorrect ? 1 : 0;
+
+    const answerRecord = {
+      questionIndex,
+      answer: userAnswer,
+      isCorrect,
+      points,
+      timeSpent: timeSpent || 0,
+      answeredAt: Date.now()
+    };
+
+    participant.answers.push(answerRecord);
+    participant.score += points;
+
+    rooms[roomIndex] = room;
+    await writeJsonFile(ROOMS_FILE, rooms);
+
+    res.json({ 
+      message: 'Resposta registrada',
+      isCorrect,
+      points,
+      currentScore: participant.score
+    });
+  } catch (error) {
+    console.error('Erro ao registrar resposta:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/rooms/:roomId/next-question - Avança para próxima pergunta (apenas host)
+app.post('/api/rooms/:roomId/next-question', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { hostName } = req.body;
+    
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const roomIndex = rooms.findIndex(room => room.id === roomId);
+    
+    if (roomIndex === -1) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const room = rooms[roomIndex];
+
+    if (room.hostName !== hostName) {
+      return res.status(403).json({ error: 'Apenas o host pode controlar o jogo' });
+    }
+
+    if (room.status !== 'playing') {
+      return res.status(400).json({ error: 'O jogo não está em andamento' });
+    }
+
+    const nextIndex = room.currentQuestionIndex + 1;
+
+    if (nextIndex >= room.questions.length) {
+      // Jogo finalizado
+      room.status = 'finished';
+      room.currentQuestion = null;
+      room.currentQuestionIndex = -1;
+      
+      // Calcula resultados finais
+      room.gameResults = room.participants
+        .map(p => ({
+          groupName: p.groupName,
+          score: p.score,
+          totalAnswers: p.answers.length,
+          correctAnswers: p.answers.filter(a => a.isCorrect).length
+        }))
+        .sort((a, b) => b.score - a.score)
+        .map((result, index) => ({
+          ...result,
+          position: index + 1
+        }));
+    } else {
+      room.currentQuestionIndex = nextIndex;
+      room.currentQuestion = room.questions[nextIndex];
+    }
+
+    rooms[roomIndex] = room;
+    await writeJsonFile(ROOMS_FILE, rooms);
+
+    res.json({ 
+      message: room.status === 'finished' ? 'Jogo finalizado' : 'Próxima pergunta',
+      room: {
+        id: room.id,
+        status: room.status,
+        currentQuestion: room.currentQuestion,
+        currentQuestionIndex: room.currentQuestionIndex,
+        totalQuestions: room.questions.length,
+        gameResults: room.gameResults || null
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao avançar pergunta:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/rooms/:roomId/ranking - Busca ranking atual da sala
+app.get('/api/rooms/:roomId/ranking', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const room = rooms.find(room => room.id === roomId);
+    
+    if (!room) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const ranking = room.participants
+      .map(p => ({
+        id: p.id,
+        groupName: p.groupName,
+        score: p.score,
+        totalAnswers: p.answers.length,
+        correctAnswers: p.answers.filter(a => a.isCorrect).length,
+        lastAnswerAt: p.answers.length > 0 ? Math.max(...p.answers.map(a => a.answeredAt)) : p.joinedAt
+      }))
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.lastAnswerAt - b.lastAnswerAt; // Em caso de empate, quem respondeu primeiro
+      })
+      .map((participant, index) => ({
+        ...participant,
+        position: index + 1
+      }));
+
+    res.json({
+      roomId: room.id,
+      roomName: room.name,
+      status: room.status,
+      currentQuestionIndex: room.currentQuestionIndex,
+      totalQuestions: room.questions.length,
+      participantCount: room.participants.length,
+      ranking,
+      gameResults: room.gameResults || null
+    });
+  } catch (error) {
+    console.error('Erro ao buscar ranking:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/rooms - Lista todas as salas ativas
+app.get('/api/rooms', async (req, res) => {
+  try {
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    
+    const roomsList = rooms
+      .filter(room => room.status !== 'finished') // Apenas salas não finalizadas
+      .map(room => ({
+        id: room.id,
+        name: room.name,
+        hostName: room.hostName,
+        status: room.status,
+        participantCount: room.participants.length,
+        maxPlayers: room.maxPlayers,
+        createdAt: room.createdAt
+      }))
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    res.json(roomsList);
+  } catch (error) {
+    console.error('Erro ao listar salas:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// DELETE /api/rooms/:roomId - Remove uma sala (apenas host)
+app.delete('/api/rooms/:roomId', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { hostName } = req.body;
+    
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const roomIndex = rooms.findIndex(room => room.id === roomId);
+    
+    if (roomIndex === -1) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const room = rooms[roomIndex];
+
+    if (room.hostName !== hostName) {
+      return res.status(403).json({ error: 'Apenas o host pode remover a sala' });
+    }
+
+    rooms.splice(roomIndex, 1);
+    await writeJsonFile(ROOMS_FILE, rooms);
+
+    res.json({ message: 'Sala removida com sucesso' });
+  } catch (error) {
+    console.error('Erro ao remover sala:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// === SISTEMA DE SALAS ===
+
+// POST /api/rooms - Cria uma nova sala (apenas nome e senha)
+app.post('/api/rooms', async (req, res) => {
+  try {
+    const { roomName, roomPassword } = req.body;
+    if (!roomName || !roomPassword) {
+      return res.status(400).json({ error: 'Nome da sala e senha são obrigatórios' });
+    }
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    // Não permite nome duplicado ativo
+    const existingRoom = rooms.find(room => room.name === roomName && room.status !== 'finished');
+    if (existingRoom) {
+      return res.status(400).json({ error: 'Já existe uma sala ativa com este nome' });
+    }
+    const newRoom = {
+      id: generateId(),
+      name: roomName,
+      password: roomPassword,
+      status: 'waiting',
+      participants: [],
+      currentQuestionIndex: -1,
+      questions: [],
+      createdAt: Date.now(),
+      startedAt: null,
+      finishedAt: null
+    };
+    rooms.push(newRoom);
+    await writeJsonFile(ROOMS_FILE, rooms);
+    res.json({ id: newRoom.id, name: newRoom.name, createdAt: newRoom.createdAt });
+  } catch (error) {
+    console.error('Erro ao criar sala:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/rooms/:roomId/join - Entra em uma sala
+app.post('/api/rooms/:roomId/join', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { groupName } = req.body;
+    if (!groupName) {
+      return res.status(400).json({ error: 'Nome do grupo é obrigatórios' });
+    }
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const room = rooms.find(r => r.id === roomId);
+    if (!room) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    // Verifica se grupo já existe na sala
+    const existingParticipant = room.participants.find(p => p.groupName === groupName);
+    if (existingParticipant) {
+      return res.json({ participant: existingParticipant, room: { id: room.id, name: room.name, status: room.status } });
+    }
+    const participant = {
+      id: generateId(),
+      groupName,
+      score: 0,
+      answers: [],
+      joinedAt: Date.now(),
+      isActive: true
+    };
+    room.participants.push(participant);
+    const updatedRooms = rooms.map(r => r.id === roomId ? room : r);
+    await writeJsonFile(ROOMS_FILE, updatedRooms);
+    res.json({ participant, room: { id: room.id, name: room.name, status: room.status } });
+  } catch (error) {
+    console.error('Erro ao entrar na sala:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/rooms/:roomId/start - Admin inicia o quiz
+app.post('/api/rooms/:roomId/start', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { questions } = req.body;
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const room = rooms.find(r => r.id === roomId);
+    if (!room) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+    if (room.status !== 'waiting') {
+      return res.status(400).json({ error: 'A sala já está em andamento ou finalizada' });
+    }
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: 'Perguntas são obrigatórias' });
+    }
+    if (room.participants.length === 0) {
+      return res.status(400).json({ error: 'Nenhum participante na sala' });
+    }
+    room.status = 'playing';
+    room.questions = questions;
+    room.currentQuestionIndex = 0;
+    room.startedAt = Date.now();
+    const updatedRooms = rooms.map(r => r.id === roomId ? room : r);
+    await writeJsonFile(ROOMS_FILE, updatedRooms);
+    res.json({ message: 'Quiz iniciado com sucesso', room });
+  } catch (error) {
+    console.error('Erro ao iniciar quiz:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/rooms/:roomId/next - Admin avança para próxima pergunta
+app.post('/api/rooms/:roomId/next', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const roomIndex = rooms.findIndex(r => r.id === roomId);
+    
+    if (roomIndex === -1) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const room = rooms[roomIndex];
+    
+    if (room.status !== 'playing') {
+      return res.status(400).json({ error: 'Sala não está em jogo' });
+    }
+
+    const nextIndex = room.currentQuestionIndex + 1;
+    
+    if (nextIndex >= room.questions.length) {
+      // Jogo finalizado
+      room.status = 'finished';
+      room.finishedAt = Date.now();
+      room.currentQuestionIndex = -1; // Indica fim
+      
+      // Calcula resultados finais
+      room.gameResults = room.participants
+        .map(p => ({
+          groupName: p.groupName,
+          score: p.score,
+          totalAnswers: p.answers.length,
+          correctAnswers: p.answers.filter(a => a.isCorrect).length
+        }))
+        .sort((a, b) => b.score - a.score)
+        .map((result, index) => ({
+          ...result,
+          position: index + 1
+        }));
+    } else {
+      room.currentQuestionIndex = nextIndex;
+    }
+
+    rooms[roomIndex] = room;
+    await writeJsonFile(ROOMS_FILE, rooms);
+
+    console.log(`📝 Sala ${room.name}: ${room.status === 'finished' ? 'Quiz finalizado' : `Avançou para pergunta ${room.currentQuestionIndex + 1}`}`);
+
+    res.json({ 
+      message: room.status === 'finished' ? 'Jogo finalizado' : 'Próxima pergunta',
+      room: {
+        id: room.id,
+        status: room.status,
+        currentQuestionIndex: room.currentQuestionIndex,
+        totalQuestions: room.questions.length,
+        gameResults: room.gameResults || null
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao avançar pergunta:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// DELETE /api/rooms/:roomId - Admin deleta sala
+app.delete('/api/rooms/:roomId', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    const room = rooms.find(r => r.id === roomId);
+    
+    if (!room) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+
+    const updatedRooms = rooms.filter(r => r.id !== roomId);
+    await writeJsonFile(ROOMS_FILE, updatedRooms);
+
+    console.log(`🗑️ Sala ${room.name} foi deletada`);
+    res.json({ message: 'Sala deletada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao deletar sala:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+app.get('/api/rooms-all', async (req, res) => {
+  try {
+    const rooms = await readJsonFile(ROOMS_FILE, []);
+    console.log('Listando salas...', rooms);
+    res.json(rooms);
+  } catch (error) {
+    console.error('Erro ao listar salas:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

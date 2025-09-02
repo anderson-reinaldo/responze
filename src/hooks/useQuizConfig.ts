@@ -1,4 +1,5 @@
 import { getApiBase } from '@/lib/realApi';
+import api from '@/services/axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -24,11 +25,12 @@ export const useQuizConfig = () => {
   return useQuery<QuizConfig>({
     queryKey: ['quiz-config'],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE}/quiz-config`);
-      if (!response.ok) {
-        throw new Error('Erro ao buscar configuração');
+      try {
+        const { data } = await api.get(`/quiz-config`);
+        return data;
+      } catch (error: any) {
+        throw new Error(error?.response?.data?.error || error?.message || 'Erro ao buscar configuração');
       }
-      return response.json();
     },
     staleTime: 1000 * 60 * 5, // 5 minutos
   });
@@ -40,20 +42,12 @@ export const useSaveQuizConfig = () => {
 
   return useMutation({
     mutationFn: async (selectedQuestions: Question[]) => {
-      const response = await fetch(`${API_BASE}/quiz-config`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ selectedQuestions }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Erro ao salvar configuração');
+      try {
+        const { data } = await api.post(`/quiz-config`, { selectedQuestions });
+        return data;
+      } catch (error: any) {
+        throw new Error(error?.response?.data?.error || error?.message || 'Erro ao salvar configuração');
       }
-
-      return response.json();
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['quiz-config'] });
@@ -76,16 +70,12 @@ export const useResetQuizConfig = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await fetch(`${API_BASE}/quiz-config`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Erro ao resetar configuração');
+      try {
+        const { data } = await api.delete(`/quiz-config`);
+        return data;
+      } catch (error: any) {
+        throw new Error(error?.response?.data?.error || error?.message || 'Erro ao resetar configuração');
       }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quiz-config'] });
