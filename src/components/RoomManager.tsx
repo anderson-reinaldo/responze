@@ -344,7 +344,7 @@ export default function AdminDashboard({ questions, onStartTVMode }:RoomManagerP
               </Button>
               
               <Button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/admin/settings')}
                 variant="outline"
                 className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
