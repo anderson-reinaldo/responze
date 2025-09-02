@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import RoomPage from "./pages/RoomPage";
-import AdminDashboard from "./pages/AdminDashboard";
 import CreateRoomPage from "./pages/CreateRoomPage";
 import NotFound from "./pages/NotFound";
 import { QuizConfig } from "./components/QuizConfig";
@@ -22,7 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/room/:roomId" element={<RoomPage />} />
           <Route path="/admin/create-room" element={<CreateRoomPage />} />
-          <Route path="/admin/panel" element={<QuizConfig />} />
+          <Route path="/admin/settings" element={<QuizConfig />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
