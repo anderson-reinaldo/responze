@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings, Plus, Edit, Trash2, Check, X, Brain, FileText, Shuffle, Play, Clock, Eraser, History, Calendar, Users } from "lucide-react";
+import { Settings, Plus, Edit, Trash2, Check, X, Brain, FileText, Shuffle, Play, Clock, Eraser, History, Calendar, Users, Home } from "lucide-react";
 import { QuizButton } from "@/components/ui/quiz-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -488,6 +488,15 @@ export const QuizConfig = () => {
                 <p className="text-white/70 text-sm sm:text-base">Selecione ou crie suas perguntas</p>
               </div>
             </div>
+            
+            <QuizButton
+              variant="secondary"
+              onClick={() => window.location.href = '/'}
+              className="w-full sm:w-auto"
+            >
+              <Home className="w-4 h-4" />
+              <span className="ml-2">Voltar ao Início</span>
+            </QuizButton>
           </div>
 
           {/* Status da Configuração */}
